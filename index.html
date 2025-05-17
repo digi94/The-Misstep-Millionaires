@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Misstep Millionaires</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Patrick+Hand&display=swap');
+        
+        :root {
+            --primary: #FF9F1C;
+            --secondary: #2EC4B6;
+            --accent: #E71D36;
+            --light: #FDFFFC;
+            --dark: #011627;
+        }
+        
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #FFF9F0;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        .comic-font {
+            font-family: 'Comic Neue', cursive;
+        }
+        
+        .story-card {
+            transition: all 0.3s ease;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+            border: 3px solid var(--dark);
+        }
+        
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 12px 12px 0 rgba(0,0,0,0.2);
+        }
+        
+        .bubble {
+            position: relative;
+            background: var(--light);
+            border-radius: 50%;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .bubble:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border: 20px solid transparent;
+            border-top-color: var(--light);
+            border-bottom: 0;
+            border-left: 0;
+            margin-left: -10px;
+            margin-bottom: -20px;
+        }
+        
+        .page-turn {
+            animation: pageTurn 1.5s ease-in-out;
+        }
+        
+        @keyframes pageTurn {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .wiggle {
+            animation: wiggle 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes wiggle {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            opacity: 0;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, rgba(254,255,0,0.5) 0%, rgba(254,255,0,0.5) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 90%;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50 border-b-4 border-black">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="text-2xl font-bold comic-font text-yellow-500">
+                        <span class="text-blue-500">Misstep</span> 
+                        <span class="text-red-500">Millionaires</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#stories" class="text-lg font-medium hover:text-yellow-500 transition">Stories</a>
+                    <a href="#about" class="text-lg font-medium hover:text-yellow-500 transition">About</a>
+                    <a href="#lessons" class="text-lg font-medium hover:text-yellow-500 transition">Lessons</a>
+                    <button onclick="toggleAudio()" class="p-2 rounded-full bg-yellow-100 hover:bg-yellow-200 transition">
+                        <i id="audioIcon" class="fas fa-volume-up text-yellow-600"></i>
+                    </button>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="outline-none">
+                        <svg class="w-6 h-6 text-gray-700" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t-2 border-gray-100">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#stories" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-yellow-50">Stories</a>
+                <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-yellow-50">About</a>
+                <a href="#lessons" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-yellow-50">Lessons</a>
+                <button onclick="toggleAudio()" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-yellow-50 text-left">
+                    <i id="mobileAudioIcon" class="fas fa-volume-up text-yellow-600 mr-2"></i>
+                    Toggle Sound
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-yellow-100 to-blue-100 opacity-50"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 relative z-10">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 comic-font">
+                    <span class="text-red-500">The</span> 
+                    <span class="text-blue-500">Misstep</span> 
+                    <span class="text-yellow-500">Millionaires</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+                    The wildly funny stories of young entrepreneurs who never gave up!
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#stories" class="px-8 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-bold rounded-full shadow-lg transform hover:scale-105 transition duration-300 border-2 border-black">
+                        Read Stories
+                    </a>
+                    <a href="#lessons" class="px-8 py-3 bg-blue-400 hover:bg-blue-500 text-white font-bold rounded-full shadow-lg transform hover:scale-105 transition duration-300 border-2 border-black">
+                        Learn Lessons
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-16 bg-white"></div>
+        <div class="absolute -bottom-10 left-0 right-0 flex justify-center">
+            <div class="w-64 h-64 rounded-full bg-yellow-300 opacity-20 blur-3xl"></div>
+        </div>
+    </section>
+
+    <!-- Floating Characters -->
+    <div class="hidden md:block">
+        <div class="absolute top-1/4 left-10 floating">
+            <div class="bubble w-24 h-24 bg-red-100">
+                <img src="https://cdn-icons-png.flaticon.com/512/5238/5238346.png" alt="Lemonade" class="w-16 h-16">
+            </div>
+        </div>
+        <div class="absolute top-1/3 right-10 floating" style="animation-delay: 0.5s;">
+            <div class="bubble w-24 h-24 bg-blue-100">
+                <img src="https://cdn-icons-png.flaticon.com/512/5238/5238344.png" alt="Backpack" class="w-16 h-16">
+            </div>
+        </div>
+        <div class="absolute top-2/3 left-20 floating" style="animation-delay: 1s;">
+            <div class="bubble w-24 h-24 bg-green-100">
+                <img src="https://cdn-icons-png.flaticon.com/512/5238/5238345.png" alt="Cookie" class="w-16 h-16">
+            </div>
+        </div>
+        <div class="absolute top-3/4 right-20 floating" style="animation-delay: 1.5s;">
+            <div class="bubble w-24 h-24 bg-yellow-100">
+                <img src="https://cdn-icons-png.flaticon.com/512/5238/5238347.png" alt="Slime" class="w-16 h-16">
+            </div>
+        </div>
+    </div>
+
+    <!-- Stories Section -->
+    <section id="stories" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 comic-font">
+                    <span class="highlight">The Stories</span>
+                </h2>
+                <p class="text-xl max-w-3xl mx-auto">
+                    Funny tales of young entrepreneurs who turned mistakes into success!
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Story 1 -->
+                <div onclick="openStory(1)" class="story-card bg-yellow-50 rounded-xl p-6 cursor-pointer hover:bg-yellow-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-yellow-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-lemon text-yellow-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">The Lemonade Stand Chronicles</h3>
+                    </div>
+                    <p class="mb-4">Mia accidentally orders 500 lemons and makes salty lemonade, but with help from friends (and her dog Max), she turns it into a sweet success!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-yellow-200 rounded-full text-sm font-medium">Mistakes: 3</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Teamwork</span>
+                    </div>
+                </div>
+                
+                <!-- Story 2 -->
+                <div onclick="openStory(2)" class="story-card bg-blue-50 rounded-xl p-6 cursor-pointer hover:bg-blue-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-dog text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Maggie's Million-Dollar Mess-Up</h3>
+                    </div>
+                    <p class="mb-4">Maggie wanted eco-friendly backpacks but accidentally ordered dog purses instead. Turns out, internet-famous pups loved them!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-blue-200 rounded-full text-sm font-medium">Mistakes: 1</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Flexibility</span>
+                    </div>
+                </div>
+                
+                <!-- Story 3 -->
+                <div onclick="openStory(3)" class="story-card bg-red-50 rounded-xl p-6 cursor-pointer hover:bg-red-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-red-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-cookie text-red-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Cookie Queen Catastrophe</h3>
+                    </div>
+                    <p class="mb-4">Ella's cookies were spicy, hard as rocks, and mysteriously green - but Sweetville loved her "Cookie Queen" creations anyway!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-red-200 rounded-full text-sm font-medium">Mistakes: 3</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Creativity</span>
+                    </div>
+                </div>
+                
+                <!-- Story 4 -->
+                <div onclick="openStory(4)" class="story-card bg-green-50 rounded-xl p-6 cursor-pointer hover:bg-green-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-green-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-paw text-green-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Penny's Pet Spa Snafu</h3>
+                    </div>
+                    <p class="mb-4">Penny's shampoo mix-up turned pets rainbow-colored, creating the most fashionable furry friends in town!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Mistakes: 1</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Opportunity</span>
+                    </div>
+                </div>
+                
+                <!-- Story 5 -->
+                <div onclick="openStory(5)" class="story-card bg-purple-50 rounded-xl p-6 cursor-pointer hover:bg-purple-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-purple-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-birthday-cake text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">The Great Birthday Cake Fiasco</h3>
+                    </div>
+                    <p class="mb-4">Lucy's cakes were crooked, sinking, and looked nothing like planned - but became famous as "fun cakes" that made everyone laugh!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-purple-200 rounded-full text-sm font-medium">Mistakes: 5</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Joy</span>
+                    </div>
+                </div>
+                
+                <!-- Story 6 -->
+                <div onclick="openStory(6)" class="story-card bg-pink-50 rounded-xl p-6 cursor-pointer hover:bg-pink-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-pink-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-tshirt text-pink-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Lila's Lucky (and Unlucky) Boutique</h3>
+                    </div>
+                    <p class="mb-4">Lila's clothes had three sleeves and no armholes - but became the hottest fashion trend for kids who loved being different!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-pink-200 rounded-full text-sm font-medium">Mistakes: 7</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Uniqueness</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button onclick="showMoreStories()" id="showMoreBtn" class="px-6 py-2 bg-white border-2 border-black rounded-full font-medium hover:bg-gray-100 transition">
+                    Show More Stories <i class="fas fa-chevron-down ml-1"></i>
+                </button>
+            </div>
+            
+            <!-- Hidden Stories -->
+            <div id="moreStories" class="hidden mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Story 7 -->
+                <div onclick="openStory(7)" class="story-card bg-orange-50 rounded-xl p-6 cursor-pointer hover:bg-orange-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-orange-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-popcorn text-orange-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Bella and the Popcorn Business Blow-Up</h3>
+                    </div>
+                    <p class="mb-4">Bella's pickle ice cream popcorn was... interesting. But when she simplified, she won the town popcorn contest!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-orange-200 rounded-full text-sm font-medium">Mistakes: 6</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Simplicity</span>
+                    </div>
+                </div>
+                
+                <!-- Story 8 -->
+                <div onclick="openStory(8)" class="story-card bg-teal-50 rounded-xl p-6 cursor-pointer hover:bg-teal-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-teal-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-slime text-teal-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">The Slippery Slime Empire</h3>
+                    </div>
+                    <p class="mb-4">Emma's slime was too sticky and caused chaos - until she added safety rules and made it the coolest slime in school!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-teal-200 rounded-full text-sm font-medium">Mistakes: 4</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Responsibility</span>
+                    </div>
+                </div>
+                
+                <!-- Story 9 -->
+                <div onclick="openStory(9)" class="story-card bg-indigo-50 rounded-xl p-6 cursor-pointer hover:bg-indigo-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-indigo-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-mobile-alt text-indigo-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Amelia's Accidental App</h3>
+                    </div>
+                    <p class="mb-4">Amelia wanted a chores app but created a viral dance challenge app instead - and became famous worldwide!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-indigo-200 rounded-full text-sm font-medium">Mistakes: 1</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Adaptation</span>
+                    </div>
+                </div>
+                
+                <!-- Story 10 -->
+                <div onclick="openStory(10)" class="story-card bg-amber-50 rounded-xl p-6 cursor-pointer hover:bg-amber-100 border-2 border-black">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 rounded-full bg-amber-200 flex items-center justify-center mr-4 border-2 border-black">
+                            <i class="fas fa-hammer text-amber-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Sophie's Silly Side Hustles</h3>
+                    </div>
+                    <p class="mb-4">From hamster hats to singing sandwiches, Sophie's failed ideas became hilarious videos that made her famous!</p>
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 bg-amber-200 rounded-full text-sm font-medium">Mistakes: 8</span>
+                        <span class="px-3 py-1 bg-green-200 rounded-full text-sm font-medium">Lesson: Persistence</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-16 bg-yellow-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 comic-font">
+                    <span class="highlight">About The Book</span>
+                </h2>
+                <p class="text-xl max-w-3xl mx-auto">
+                    Fun, inspiring stories about young entrepreneurs who turned mistakes into success!
+                </p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="md:w-1/2">
+                    <div class="bg-white p-8 rounded-xl shadow-lg border-2 border-black">
+                        <h3 class="text-2xl font-bold mb-4 comic-font">Why These Stories Matter</h3>
+                        <p class="mb-4">Each story in <span class="font-bold">The Misstep Millionaires</span> shows how mistakes and failures are just stepping stones to success. The young entrepreneurs in these tales don't give up when things go wrong—they get creative, learn lessons, and often discover even better ideas!</p>
+                        <p class="mb-4">From lemonade stands to tech apps, these kids prove that entrepreneurship isn't about being perfect—it's about being persistent, flexible, and willing to laugh at yourself along the way.</p>
+                        <div class="flex items-center mt-6">
+                            <div class="mr-4 text-yellow-500 text-2xl">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <p class="font-medium">Perfect for ages 7-12 who love funny stories with valuable life lessons!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="relative">
+                        <div class="bg-blue-100 p-6 rounded-xl border-2 border-black transform rotate-2">
+                            <div class="bg-white p-6 rounded-lg border-2 border-black transform -rotate-1">
+                                <h3 class="text-xl font-bold mb-3 comic-font">Key Features:</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <div class="mr-3 text-green-500 mt-1">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <span>10 hilarious entrepreneurial misadventures</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="mr-3 text-green-500 mt-1">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <span>Valuable business and life lessons</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="mr-3 text-green-500 mt-1">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <span>Diverse young protagonists</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="mr-3 text-green-500 mt-1">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <span>Encourages creativity and resilience</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <div class="mr-3 text-green-500 mt-1">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <span>Shows the fun side of entrepreneurship</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="absolute -top-6 -right-6 bg-red-100 w-16 h-16 rounded-full flex items-center justify-center border-2 border-black">
+                            <i class="fas fa-book text-red-500 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lessons Section -->
+    <section id="lessons" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 comic-font">
+                    <span class="highlight">Key Lessons</span>
+                </h2>
+                <p class="text-xl max-w-3xl mx-auto">
+                    What these young entrepreneurs learned from their mistakes
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Lesson 1 -->
+                <div class="bg-yellow-50 p-6 rounded-xl border-2 border-black transform hover:scale-105 transition duration-300">
+                    <div class="w-16 h-16 rounded-full bg-yellow-200 flex items-center justify-center mb-4 mx-auto border-2 border-black">
+                        <i class="fas fa-users text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-center mb-3">Teamwork Triumphs</h3>
+                    <p class="text-center">Big dreams are easier with friends. Mia's lemonade stand succeeded when her friends (and dog Max) pitched in!</p>
+                </div>
+                
+                <!-- Lesson 2 -->
+                <div class="bg-blue-50 p-6 rounded-xl border-2 border-black transform hover:scale-105 transition duration-300">
+                    <div class="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center mb-4 mx-auto border-2 border-black">
+                        <i class="fas fa-lightbulb text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-center mb-3">Mistakes = Opportunities</h3>
+                    <p class="text-center">Maggie's dog purse mistake became her biggest success. Sometimes accidents lead to fantastic new ideas!</p>
+                </div>
+                
+                <!-- Lesson 3 -->
+                <div class="bg-red-50 p-6 rounded-xl border-2 border-black transform hover:scale-105 transition duration-300">
+                    <div class="w-16 h-16 rounded-full bg-red-200 flex items-center justify-center mb-4 mx-auto border-2 border-black">
+                        <i class="fas fa-cookie text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-center mb-3">Perfect Isn't Required</h3>
+                    <p class="text-center">Ella's imperfect cookies were a hit because they were fun and different. Things don't need to be perfect to bring joy!</p>
+                </div>
+                
+                <!-- Lesson 4 -->
+                <div class="bg-green-50 p-6 rounded-xl border-2 border-black transform hover:scale-105 transition duration-300">
+                    <div class="w-16 h-16 rounded-full bg-green-200 flex items-center justify-center mb-4 mx-auto border-2 border-black">
+                        <i class="fas fa-paw text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-center mb-3">Embrace the Unexpected</h3>
+                    <p class="text-center">Penny's colorful pet spa became famous by accident. Creativity can turn problems into new opportunities!</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <div class="inline-block bg-white p-6 rounded-xl border-2 border-black max-w-2xl">
+                    <h3 class="text-2xl font-bold mb-4 comic-font">The Biggest Lesson of All:</h3>
+                    <p class="text-xl font-medium mb-4">Never give up on your dreams, even when things go wrong!</p>
+                    <div class="flex justify-center">
+                        <div class="w-16 h-16 rounded-full bg-purple-200 flex items-center justify-center border-2 border-black wiggle">
+                            <i class="fas fa-heart text-purple-600 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Story Modal -->
+    <div id="storyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl max-w-4xl w-full max-h-screen overflow-y-auto border-4 border-black" style="min-height: 80vh;">
+            <div class="sticky top-0 bg-white p-4 border-b-2 border-black flex justify-between items-center">
+                <h3 id="storyTitle" class="text-2xl font-bold comic-font"></h3>
+                <button onclick="closeStory()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div id="storyContent" class="p-6">
+                <!-- Story content will be loaded here -->
+            </div>
+            <div class="sticky bottom-0 bg-white p-4 border-t-2 border-black flex justify-between items-center">
+                <button id="prevBtn" onclick="prevStory()" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 hidden">
+                    <i class="fas fa-arrow-left mr-2"></i> Previous
+                </button>
+                <div class="flex-grow text-center">
+                    <span id="storyProgress" class="font-medium"></span>
+                </div>
+                <button id="nextBtn" onclick="nextStory()" class="px-4 py-2 bg-yellow-400 rounded-lg hover:bg-yellow-500">
+                    Next <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 comic-font text-yellow-400">Misstep Millionaires</h3>
+                    <p class="mb-4">Funny, inspiring stories about young entrepreneurs who turned mistakes into success!</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-yellow-400">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-white hover:text-yellow-400">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-white hover:text-yellow-400">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 comic-font text-yellow-400">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#stories" class="hover:text-yellow-400">Stories</a></li>
+                        <li><a href="#about" class="hover:text-yellow-400">About</a></li>
+                        <li><a href="#lessons" class="hover:text-yellow-400">Lessons</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4 comic-font text-yellow-400">Get Updates</h3>
+                    <p class="mb-4">Sign up for new stories and lessons!</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 rounded-l-lg w-full text-black">
+                        <button class="bg-yellow-400 text-black px-4 py-2 rounded-r-lg hover:bg-yellow-500">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center">
+                <p>&copy; 2023 The Misstep Millionaires. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Audio Element -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Confetti Container -->
+    <div id="confettiContainer" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
+
+    <script>
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+        
+        // Audio toggle
+        let audioEnabled = false;
+        const audio = document.getElementById('backgroundMusic');
+        
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            const audioIcon = document.getElementById('audioIcon');
+            const mobileAudioIcon = document.getElementById('mobileAudioIcon');
+            
+            if (audioEnabled) {
+                audio.play();
+                audioIcon.classList.remove('fa-volume-mute');
+                audioIcon.classList.add('fa-volume-up');
+                mobileAudioIcon.classList.remove('fa-volume-mute');
+                mobileAudioIcon.classList.add('fa-volume-up');
+            } else {
+                audio.pause();
+                audioIcon.classList.remove('fa-volume-up');
+                audioIcon.classList.add('fa-volume-mute');
+                mobileAudioIcon.classList.remove('fa-volume-up');
+                mobileAudioIcon.classList.add('fa-volume-mute');
+            }
+        }
+        
+        // Show more stories
+        function showMoreStories() {
+            const moreStories = document.getElementById('moreStories');
+            const showMoreBtn = document.getElementById('showMoreBtn');
+            
+            if (moreStories.classList.contains('hidden')) {
+                moreStories.classList.remove('hidden');
+                showMoreBtn.innerHTML = 'Show Less Stories <i class="fas fa-chevron-up ml-1"></i>';
+            } else {
+                moreStories.classList.add('hidden');
+                showMoreBtn.innerHTML = 'Show More Stories <i class="fas fa-chevron-down ml-1"></i>';
+            }
+        }
+        
+        // Stories data
+        const stories = [
+            {
+                id: 1,
+                title: "The Lemonade Stand Chronicles",
+                content: `
+                    <div class="mb-8">
+                        <div class="flex justify-center mb-6">
+                            <div class="w-24 h-24 rounded-full bg-yellow-200 flex items-center justify-center border-4 border-black">
+                                <i class="fas fa-lemon text-yellow-600 text-4xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-xl font-bold mb-4 text-center comic-font">One sunny summer morning...</h4>
+                        <p class="mb-4">Mia, an 11-year-old girl with bright eyes and a big smile, had a brilliant idea. "I'm gonna start my lemonade stand!" she said, clapping her hands. "I'll make the best lemonade in town and become super successful!"</p>
+                        <p class="mb-4">Mia grabbed her notepad and wrote down her plan:</p>
+                        <ol class="list-decimal pl-6 mb-4 space-y-2">
+                            <li>Buy lemons</li>
+                            <li>Make lemonade</li>
+                            <li>Sell it</li>
+                            <li>Become a lemonade boss!</li>
+                        </ol>
+                        <p class="mb-6">She was so excited that she didn't notice her dog, Max, wagging his tail beside her. "You can help too, Max!" Mia said, scratching his ears. Max barked happily, not knowing what that meant.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Big Mistake</h4>
+                        <p class="mb-4">Mia got to work right away. She asked her mom if she could order some lemons online. But instead of reading carefully, Mia accidentally ordered 500 lemons!</p>
+                        <p class="mb-4">When a giant truck arrived with boxes of lemons, Mia's jaw dropped. "Oops!" she whispered, staring at the mountain of fruit. Yellow lemons rolled out like a fruit avalanche!</p>
+                        <p class="mb-4">But Mia wasn't going to give up. She squeezed lemons for hours, filling a big pitcher. She smiled as the pitcher filled. "This is going to be the best lemonade ever!" Max sneezed when a splash of lemon juice hit his nose.</p>
+                        <p class="mb-4">Then, she grabbed a bag from the pantry and added what she thought was sugar. She stirred and tasted the lemonade. Her face scrunched up like she'd bitten a lemon. Her lips puckered like a sour pickle.</p>
+                        <p class="mb-4">"Ewww! This is salty!" she cried. Mia looked at the bag. It said SALT in big letters. "Oh no!" she groaned. "I used salt instead of sugar!"</p>
+                        <p class="mb-6">She stared at the salty pitcher. What now? Should she dump it all? Just then, Max barked. Mia slumped in her chair. "I can't sell this. Maybe I should just give up."</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Teamwork to the Rescue</h4>
+                        <p class="mb-4">Mia didn't want to waste all the lemons, so she got a new idea. She grabbed Max's leash. "You're my delivery dog now!" she said. She tied a basket to his back and put a few cups of lemonade.</p>
+                        <p class="mb-4">Max trotted down the street, wagging his tail. But when Mia saw him stopping to sniff every tree and chase a butterfly, she realized Max wasn't the fastest delivery dog.</p>
+                        <p class="mb-4">Next, Mia called her friends to help. "I need sugar, cups, and someone to help me squeeze lemons!" she told them. Her friends laughed when they heard about her salty lemonade, but were happy to help.</p>
+                        <p class="mb-4">Soon, Mia's backyard was super busy. Her friend Lily squeezed lemons while Jack poured sugar into the pitcher. Even Max helped by licking up spilled drops of lemonade.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Best Lemonade in Town</h4>
+                        <p class="mb-4">By the afternoon, Mia's lemonade stand was ready. She painted a bright yellow sign, "Mia's Lemonade – Sweet and Fresh!" Her friends helped her set up the table, and Max sat proudly wearing a little hat with "Delivery Dog" written on it.</p>
+                        <p class="mb-4">People from the neighborhood came to buy lemonade. "Mmm, this is delicious!" said Mrs. Green, who lived next door. Soon, Mia's stand had a long line. She handed out cups while her friends kept making more lemonade. Max delivered a cup to Mr. Brown, who couldn't leave his porch.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Lessons Learned</h4>
+                        <p class="mb-4">By the end of the day, Mia was tired but happy. She looked at the empty lemon boxes and her jar full of money. "I couldn't have done it without all of you," she told her friends and Max, giggling as they clinked their lemonade cups together in celebration.</p>
+                        <p class="mb-6">Mia learned three important lessons that day:</p>
+                        <ol class="list-decimal pl-6 mb-6 space-y-2">
+                            <li>Always check your ingredients</li>
+                            <li>Big dreams are easier with friends</li>
+                            <li>Dogs make great helpers, even if they get distracted</li>
+                        </ol>
+                        <p class="mb-4">Mia looked at Max, her friends, and the empty lemonade cups as the sun set. The sticky sweetness of success was still on her fingers. "Maybe I'll try a cookie stand next!" she laughed, already imagining colorful cookies and happy customers.</p>
+                        <p class="mb-4">And so, Mia's big dreams didn't stop. They just got sweeter, one cup of lemonade at a time.</p>
+                        
+                        <div class="bg-yellow-50 p-6 rounded-lg border-2 border-black mt-8">
+                            <h4 class="text-xl font-bold mb-3 comic-font text-center">Moral of the Story</h4>
+                            <p class="text-center font-medium">When things go wrong, don't give up—get creative and ask for help! Teamwork can turn mistakes into sweet success.</p>
+                        </div>
+                    </div>
+                `,
+                moral: "When things go wrong, don't give up—get creative and ask for help! Teamwork can turn mistakes into sweet success."
+            },
+            {
+                id: 2,
+                title: "Maggie's Million-Dollar Mess-Up",
+                content: `
+                    <div class="mb-8">
+                        <div class="flex justify-center mb-6">
+                            <div class="w-24 h-24 rounded-full bg-blue-200 flex items-center justify-center border-4 border-black">
+                                <i class="fas fa-dog text-blue-600 text-4xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-xl font-bold mb-4 text-center comic-font">Maggie was a 10-year-old girl with big dreams...</h4>
+                        <p class="mb-4">She loved drawing, designing, and thinking up cool ideas. One day, she decided, "I will make backpacks that are good for the planet! They'll help save Earth and look super cool too!"</p>
+                        <p class="mb-4">Maggie's backpacks would be made from recycled materials and come in fun colors. She spent hours sketching designs with rainbow zippers and secret pockets.</p>
+                        <p class="mb-6">"The blue one could have cloud patterns, and the green one could look like turtle shells!" she daydreamed. "I'll call my brand Maggie's Eco Magic!" she said with a smile.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Big Typo</h4>
+                        <p class="mb-4">Maggie saved up her allowance and birthday money to place her first order. "I just know these backpacks are going to change everything!" she whispered to herself.</p>
+                        <p class="mb-4">She carefully typed everything into the computer, including the size, color, and design of her backpacks. But when she typed "backpacks," Maggie made a mistake. She accidentally wrote "dog packs."</p>
+                        <p class="mb-6">Maggie didn't see the mistake. She hit "send" on her order and jumped up and down. "Soon, my planet-friendly backpacks will be here!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Surprise Delivery</h4>
+                        <p class="mb-4">A few weeks later, a big box arrived at Maggie's house. She ripped it open, excited to see her backpacks. "Wait..." Maggie pulled out something small and colorful. She looked confused. "Why are they so tiny? These aren't backpacks!"</p>
+                        <p class="mb-4">She picked one up and examined it closer. It was small, colorful, and had tiny straps. Then it hit her. "Dog purses?! This has to be a joke!" Maggie gasped. They were purses for dogs!</p>
+                        <p class="mb-6">Maggie felt her face turn red. "Oh no! I made a huge mistake!" she groaned. "I wanted to help the planet... not become a dog purse designer!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">A Barking Success</h4>
+                        <p class="mb-4">Maggie thought about sending the dog purses back. She stared at the tiny bags. "What am I supposed to do with these now?" she wondered.</p>
+                        <p class="mb-4">But before she could decide, her neighbor, Mrs. Lopez, walked by with her dog, Pippin. "What's that?" Mrs. Lopez asked. Maggie showed her one of the dog purses. Mrs. Lopez gasped. "It's adorable!"</p>
+                        <p class="mb-4">"Pippin would love to carry his snacks in this!" She snapped a picture of Pippin wearing the little purse and posted it online.</p>
+                        <p class="mb-6">Maggie didn't think much of it until the next day. Suddenly, her phone was buzzing like crazy. BZZZZ! "OMG, I NEED one of these for my dog!" someone wrote. "Maggie's Eco Magic dog purses are amazing!" said another comment.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Doggy Fame</h4>
+                        <p class="mb-4">Before Maggie knew it, her mistake had become super popular online. Famous internet dogs—pups with millions of followers—were wearing her purses. People from all over were asking to buy them.</p>
+                        <p class="mb-4">Dog owners couldn't stop talking about the cute little bags. Maggie was happy people liked her products, but she was also confused. "This wasn't my plan," she told her best friend, Ellie, showing her all the messages. "I messed everything up!"</p>
+                        <p class="mb-6">Ellie laughed. "Maggie, maybe your mistake is a good thing! Look how many people love the dog purses. Sometimes the best stuff happens by accident."</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Big Decision</h4>
+                        <p class="mb-4">Maggie had to make a choice. Should she stick with the dog purses and turn them into her brand? Or should she fix her mistake and go back to making backpacks?</p>
+                        <p class="mb-4">She sat at her desk, thinking hard. She doodled backpacks on one side of her paper and dog purses on the other. "I've always wanted to make cool backpacks that help the Earth," she said to Ellie. "But these dog purses are making so many people happy."</p>
+                        <p class="mb-6">"Why not do both?" Ellie suggested. "You're super creative, Maggie." Maggie tapped her pencil against her chin. "Maybe... both?" she wondered.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Perfect Plan</h4>
+                        <p class="mb-4">Maggie decided to keep selling the dog purses and start working on her backpack designs again. Soon, Maggie's Eco Magic had something for everyone—cool backpacks for kids and adorable purses for their furry friends.</p>
+                        <p class="mb-6">Her business grew, and Maggie learned an important lesson: mistakes can sometimes lead to fantastic new ideas if you're flexible and creative enough to see the opportunity.</p>
+                        <p class="mb-4">And from that day on, Maggie always double-checked her orders… just in case. Next up: matching backpacks and dog hats?</p>
+                        
+                        <div class="bg-blue-50 p-6 rounded-lg border-2 border-black mt-8">
+                            <h4 class="text-xl font-bold mb-3 comic-font text-center">Moral of the Story</h4>
+                            <p class="text-center font-medium">Mistakes can lead to unexpected success if you stay creative and open-minded. Sometimes, the best ideas come from accidents!</p>
+                        </div>
+                    </div>
+                `,
+                moral: "Mistakes can lead to unexpected success if you stay creative and open-minded. Sometimes, the best ideas come from accidents!"
+            },
+            {
+                id: 3,
+                title: "Cookie Queen Catastrophe",
+                content: `
+                    <div class="mb-8">
+                        <div class="flex justify-center mb-6">
+                            <div class="w-24 h-24 rounded-full bg-red-200 flex items-center justify-center border-4 border-black">
+                                <i class="fas fa-cookie text-red-600 text-4xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-xl font-bold mb-4 text-center comic-font">Once upon a time, in a cheerful little town called Sweetville...</h4>
+                        <p class="mb-4">There lived a 10-year-old girl named Ella. Ella loved baking cookies more than anything else in the world. Her fingers were always dusted with flour, and she kept a secret notebook filled with wild cookie ideas.</p>
+                        <p class="mb-6">"One day, I'll be the Cookie Queen!" she'd announce, waving her whisk like a royal scepter. "My cookies will make people smile from their taste buds to their toes!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The First Batch—The Spicy Surprise</h4>
+                        <p class="mb-4">One sunny morning, Ella told her mom, "I'm going to start a cookie business! Time to make cookie magic!" Ella's mom smiled and said, "That sounds great, Ella! Just remember, you get better every time you try."</p>
+                        <p class="mb-4">Ella nodded, grabbed her big, red apron, and set to work in the kitchen. She decided to bake chocolate chip cookies first. She mixed the dough, stirred in the chocolate chips, and popped the tray into the oven. The smell was amazing!</p>
+                        <p class="mb-4">"This is going to be perfect!" she said, clapping her hands. When the timer dinged, Ella pulled out the cookies and waited while they cooled off. She tasted one and... her mouth started burning!</p>
+                        <p class="mb-4">"Spicy?! What happened?" she cried. Ella checked the spice jars on the counter and gasped. "Oops! That's not sugar—it's cinnamon!"</p>
+                        <p class="mb-4">Her little brother, Max, wandered into the kitchen. "What smells so good?" he asked. "Try one," Ella said. Max took a bite, and his face turned red. "Hot, hot, hot!" He fanned his mouth dramatically, running in circles.</p>
+                        <p class="mb-6">But then, he grinned. "It's fun! Like a cookie with a kick!" Ella wasn't sure if "fun" was the correct description of the cookies, but Max ate two more. "Back to the drawing board," Ella sighed. "There's gotta be a way to make normal cookies!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Second Batch—The Hardest Cookies Ever</h4>
+                        <p class="mb-4">Determined to get it right, Ella tried again the next day. She measured everything very carefully and followed the recipe step by step. "This time, they'll be soft and chewy," she said.</p>
+                        <p class="mb-4">When the cookies were ready, Ella picked one up to taste it. She bit down and—CRUNCH! Her teeth barely made a dent. "These cookies are like rocks!" Ella groaned. "Why are they so hard?!"</p>
+                        <p class="mb-4">Her dad came into the kitchen. "What are you making, sweetie?" "Cookies," Ella said, holding up one of the rock-hard treats. She dropped one on the table, and it bounced with a PLINK sound.</p>
+                        <p class="mb-6">Her dad chuckled and said, "These could be great for building houses!" Ella giggled, even though she felt a little sad. "I'll keep trying," she promised. "Maybe third time's the charm?" her dad suggested.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Third Batch—The Green Mystery</h4>
+                        <p class="mb-4">Ella refused to give up. On her third try, she decided to make sugar cookies and added a little food coloring to make them extra fun. But when the cookies came out of the oven, they weren't pink or blue.</p>
+                        <p class="mb-4">"They're green! Why are they green?!" Ella slumped onto the kitchen stool and sighed. Her friend Mia came over just in time to see the green cookies. "Whoa! Are those alien cookies?" Mia asked, laughing.</p>
+                        <p class="mb-4">Ella sighed. "They're supposed to be sugar cookies." Mia took a bite. "Hmm… they taste weird... but good! Like mint and vanilla mixed."</p>
+                        <p class="mb-6">Before Ella could say anything, Max and his friends burst into the kitchen. "Are those green cookies? Cool!" They all grabbed one and started munching. Ella watched them eat her mistakes. "Maybe I'm not a real baker after all," she whispered to herself. "I can't even make a normal cookie!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">A Sweet Surprise</h4>
+                        <p class="mb-4">The next day, even though she felt like giving up, Ella set up a table outside her house with a big sign: "Ella's Cookie Creations." She was nervous. "What if no one likes my cookies?" she thought.</p>
+                        <p class="mb-4">Her first customers were Max and his friends. They bought all the spicy cinnamon cookies. "These are awesome!" they said, crunching away and pretending to breathe fire like dragons.</p>
+                        <p class="mb-4">Then Mia came by and bought the green cookies. "Alien cookies are the best!" she said, sharing them with her little sister. By the end of the day, Ella checked her cookie box. "Sold out?! Really?!"</p>
+                        <p class="mb-6">Even the hard cookies were a hit—some kids used them as hockey pucks before eating them!</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Cookie Queen of Sweetville</h4>
+                        <p class="mb-4">Word spread about Ella's strange but tasty cookies. Soon, people all over Sweetville came to try them. Some loved the spicy ones, others liked the green ones, and a few even asked for the "rock-hard hockey cookies."</p>
+                        <p class="mb-4">Ella couldn't believe it. "My mistakes turned into something amazing!" She decided to keep experimenting, making cookies in all kinds of shapes, colors, and flavors. Some were silly, some were surprising, but they were always fun.</p>
+                        <p class="mb-4">Everyone started calling Ella the Cookie Queen of Sweetville, and she couldn't have been happier. "They don't want perfect cookies," Ella realized, watching people laugh and enjoy her treats. "They just want something fun and different!"</p>
+                        <p class="mb-4">From that day on, Ella's kitchen was filled with laughter, cookies, and just a little chaos. "Maybe I'll try making glow-in-the-dark cupcakes next!" she giggled.</p>
+                        
+                        <div class="bg-red-50 p-6 rounded-lg border-2 border-black mt-8">
+                            <h4 class="text-xl font-bold mb-3 comic-font text-center">Moral of the Story</h4>
+                            <p class="text-center font-medium">Mistakes can lead to amazing discoveries. Never give up because, with creativity and determination, you can turn even the worst situations into wonderful ones!</p>
+                        </div>
+                    </div>
+                `,
+                moral: "Mistakes can lead to amazing discoveries. Never give up because, with creativity and determination, you can turn even the worst situations into wonderful ones!"
+            },
+            {
+                id: 4,
+                title: "Penny's Pet Spa Snafu",
+                content: `
+                    <div class="mb-8">
+                        <div class="flex justify-center mb-6">
+                            <div class="w-24 h-24 rounded-full bg-green-200 flex items-center justify-center border-4 border-black">
+                                <i class="fas fa-paw text-green-600 text-4xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-xl font-bold mb-4 text-center comic-font">Penny loved animals more than anything in the world...</h4>
+                        <p class="mb-4">She'd spend hours brushing neighborhood pets and dreamed of making every furry friend feel fancy and special. She dreamed of opening a pet spa where every dog and cat would feel happy and look fantastic.</p>
+                        <p class="mb-6">One sunny morning, she hung a bright sign: "Penny's Pet Spa – Pampered Pets Only!" She was so excited to welcome her furry customers.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Mix-Up</h4>
+                        <p class="mb-4">Penny had bottles of special shampoos and conditioners lined up. Some made fur shiny, others fluffy, and a few helped untangle knots. But what Penny didn't know was that the bottles had mixed-up labels! The shampoo for clean fur was swapped with colorful pet paint for fancy fur.</p>
+                        <p class="mb-4">Her first customer was a little poodle named Bella. Bella's owner, Mrs. Murphy, said, "Make her fur soft and white as snow." "You're gonna be the fluffiest pup in town!" Penny told Bella, scratching behind her ears.</p>
+                        <p class="mb-4">Penny hummed as she washed Bella with what she thought was "white shampoo." She hadn't seen the label properly. As she rinsed the soap away, something seemed different. The water looked... pinkish?</p>
+                        <p class="mb-4">"Hmm, that's weird," Penny said to herself. When Penny dried Bella, her eyes went wide. "Oh no! This isn't white shampoo—it's pink dye!" Bella was bright pink! She looked like a cotton candy puff!</p>
+                        <p class="mb-4">"What am I going to do?" Penny gasped. She tried to rewash Bella, but the color stayed. Her stomach twisted with worry. What if she had ruined everything?</p>
+                        <p class="mb-6">When Mrs. Murphy came to pick up Bella, she stared. Then, her eyes went wide, and she burst out laughing. "I love it!" Mrs. Murphy said. "Pink is so fashionable! Bella looks like a star!" PHEW! Penny was surprised but happy. This mix-up may not be so bad after all.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Crazy Colors Everywhere</h4>
+                        <p class="mb-4">Soon, more pets arrived. Max, the golden retriever, left with rainbow stripes, and Daisy, the cat, ended up with blue polka dots. Penny couldn't figure out what was happening. "Okay, Penny, you've got this... wait, WHAT just happened?!" she said, watching Max come out looking like a rainbow!</p>
+                        <p class="mb-4">SPLASH! The colorful water dripped everywhere. She checked her shampoo bottles and saw the mistake. "Oh no, the labels are wrong!"</p>
+                        <p class="mb-6">But something surprising happened. Penny expected the owners to be mad—but instead, they were thrilled! "Max looks like a superhero!" his owner shouted as Max wagged his tail like crazy. "Daisy strutted like a fashion queen at a doggy runway show!" another customer exclaimed. The pets became famous around town. People called Penny's work her "famous pet style." Suddenly, her spa was busier than ever.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Keeping Up with the Trend</h4>
+                        <p class="mb-4">After a week of colorful accidents, Penny sat down with her own dog, Buddy. "What if people get tired of these crazy colors? Maybe I should just go back to normal pet washing," she sighed.</p>
+                        <p class="mb-4">Buddy tilted his head and licked her hand, his own paws now bright green from helping around the spa. Penny's little brother peeked into the room. "Are you kidding? Everyone at school is talking about your cool pet spa! They all want their pets to look awesome too!"</p>
+                        <p class="mb-6">That gave Penny an idea. She bought colorful pet paint in every color and learned how to make fun designs intentionally. She practiced drawing hearts, stars, and stripes on Buddy. Buddy wagged his tail and pranced around, showing off his new blue mohawk to anyone who visited.</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Big Pet Parade</h4>
+                        <p class="mb-4">Soon, Penny became an expert at creating colorful, playful styles. She added a new sign to her shop: "Penny's Pet Spa – Home of the Famous Pet Style!"</p>
+                        <p class="mb-4">One day, the town announced a big pet parade. Penny's colorful pets led the way. Bella the pink poodle twirled, Max the rainbow retriever wagged his tail, and Daisy the polka-dot cat purred proudly.</p>
+                        <p class="mb-6">Everyone cheered for Penny. The mayor gave her a ribbon that said: "Best Pet Spa in Town!" Penny smiled. "All it took was a little mix-up and a lot of love for these furry friends!" Maybe her mix-up was actually her masterpiece. Next time, she'd try stars and stripes. Maybe even glitter tails!</p>
+                        
+                        <div class="bg-green-50 p-6 rounded-lg border-2 border-black mt-8">
+                            <h4 class="text-xl font-bold mb-3 comic-font text-center">Moral of the Story</h4>
+                            <p class="text-center font-medium">Sometimes, mistakes can lead to something amazing. When things go wrong, don't give up—find a way to turn the problem into a new opportunity. Creativity and kindness can make even the silliest situations shine.</p>
+                        </div>
+                    </div>
+                `,
+                moral: "Sometimes, mistakes can lead to something amazing. When things go wrong, don't give up—find a way to turn the problem into a new opportunity. Creativity and kindness can make even the silliest situations shine."
+            },
+            {
+                id: 5,
+                title: "The Great Birthday Cake Fiasco",
+                content: `
+                    <div class="mb-8">
+                        <div class="flex justify-center mb-6">
+                            <div class="w-24 h-24 rounded-full bg-purple-200 flex items-center justify-center border-4 border-black">
+                                <i class="fas fa-birthday-cake text-purple-600 text-4xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-xl font-bold mb-4 text-center comic-font">Lucy loved two things: baking cakes and making people smile...</h4>
+                        <p class="mb-4">She didn't just bake cakes—she imagined happiness in every layer of frosting, dreaming of the birthday songs and wishes that would happen around her creations.</p>
+                        <p class="mb-6">One day, she had a big idea. "What if I make special birthday cakes for people?" she thought. She set up a little table in her front yard with a big sign that said: "Lucy's Amazing Birthday Cakes!" Soon, her first customer arrived. It was her neighbor, Mr. Jones. "I need a cake for my daughter," he said. "She loves princess castles. Can you make one?" Lucy bounced on her toes and clapped her flour-covered hands. "Of course! It'll be the best castle cake EVER!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The First Cake: A Funny Castle</h4>
+                        <p class="mb-4">Lucy worked all night. She baked a tall cake with towers and tried adding a moat with blue frosting. But when she finished, it looked... a little strange. "Oops... why does this look haunted?" she whispered.</p>
+                        <p class="mb-4">Instead of a princess castle, the cake looked like a spooky haunted house! The towers leaned to the side, and the frosting made it look like ghosts were floating around. Lucy's mom peeked into the kitchen. "That's... interesting, honey. Very creative!"</p>
+                        <p class="mb-6">When Mr. Jones saw the cake, he laughed. "This is the funniest cake I've ever seen!" he said. "My daughter will love it." Lucy's cheeks turned red like strawberry frosting. "Wait... you like my crooked cake?" "Yes," Mr. Jones said. "She loves anything silly!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">The Superhero Mix-Up</h4>
+                        <p class="mb-4">Lucy's next order was from a boy named Max. "I want a superhero cake," Max said. "With Captain Lightning on it!" Lucy baked a big round cake and decorated it with frosting to look like Max's favorite hero, Captain Lightning.</p>
+                        <p class="mb-6">But when Max saw the cake, he started giggling. "That's not Captain Lightning!" Max said through his laughter. "This looks like Captain Bubblegum!" YIKES! Lucy gasped. She hadn't used the wrong colors and drawn the incorrect logo. But Max didn't care. He told everyone how funny the cake was, and soon, more people wanted cakes from Lucy. "Can you make me one too?" Max's friend asked. "Maybe a dinosaur that looks like a chicken?"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Orders Start Pouring In</h4>
+                        <p class="mb-4">Every cake Lucy made turned out a little... unusual. A unicorn cake ended up with a rainbow tail looking like rainbow spaghetti. The horn leaned sideways. PLOP! The frosting slide looked like a waterfall.</p>
+                        <p class="mb-4">A pirate ship cake sank in the middle because the frosting was too heavy. SPLOOSH! The little pirates seemed to swim in a sea of chocolate. One kid pretended to be a sailor jumping off the sinking ship!</p>
+                        <p class="mb-6">A puppy cake looked more like a lion with whiskers. The puppy cake had a smile like a sleepy lion. But everyone loved them anyway. They said Lucy's cakes weren't just cakes—they were "fun cakes!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Lucy's Moment of Doubt</h4>
+                        <p class="mb-4">After making five strange-looking cakes, Lucy sat alone at her kitchen table, staring at pictures of her creations. "Maybe I'm just a bad baker," she sighed. "Maybe I should quit."</p>
+                        <p class="mb-6">Her dad found her looking sad. "Why the long face, cake master?" "All my cakes fall or look wrong," Lucy explained. "I wanted to make beautiful cakes." Her dad smiled. "Have you seen how much those kids love your cakes? They're still talking about them at school!"</p>
+                        
+                        <h4 class="text-xl font-bold mb-4 comic-font">Lucy's Big Idea</h4>
+                        <p class="mb-4">The next day, Lucy got a new idea. She made a new sign: "Lucy's Funny Birthday Cakes!" Now, people ordered her cakes because they wanted them to be silly. Lucy loved that her cakes made people laugh.</p>
+                        <p class="mb-6">"I wanted to bake perfect cakes... but making people laugh? That's even better!" she told her parents. "Sometimes, things don't
+</html>
